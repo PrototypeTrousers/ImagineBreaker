@@ -1,0 +1,69 @@
+import org.gradle.internal.jvm.Jvm
+import org.gradle.internal.os.OperatingSystem
+
+plugins {
+    id 'cpp-library'
+}
+
+model {
+    buildTypes {
+        release
+    }
+
+    platforms {
+        x86 {
+            architecture "x86"
+        }
+        x64 {
+            architecture "x86_64"
+        }
+    }
+
+    toolChains {
+        if (OperatingSystem.current().linux) {
+            gcc(Gcc) {
+                target('linux_x86')
+                target('linux_x86_64')
+            }
+        }
+        if (OperatingSystem.current().windows) {
+            minGW(mingw) {
+                target('windows_x86_64')
+                target('windows_x86')
+            }
+        }
+    }
+}
+
+library {
+    targetMachines = [
+            machines.windows.x86, machines.windows.x86_64,
+            machines.linux.x86, machines.linux.x86_64
+    ]
+
+    binaries.configureEach {
+        def jvmHome = Jvm.current().javaHome
+
+        if (getCompileTask().get().targetPlatform.get().operatingSystem.macOsX) {
+            getCompileTask().get().compilerArgs.addAll('-I', "${jvmHome}/include")
+            getCompileTask().get().compilerArgs.addAll('-I', "${jvmHome}/include/darwin")
+            getCompileTask().get().compilerArgs.addAll('-mmacosx-version-min=10.4')
+            getCompileTask().get().linker.args '-mmacosx-version-min=10.4'
+        } else if (getCompileTask().get().targetPlatform.get().operatingSystem.linux) {
+            getCompileTask().get().compilerArgs.addAll( '-I', "${jvmHome}/include")
+            getCompileTask().get().compilerArgs.addAll( '-I', "${jvmHome}/include/linux")
+            getCompileTask().get().compilerArgs.addAll('-D_FILE_OFFSET_BITS=64')
+        } else if (getCompileTask().get().targetPlatform.get().operatingSystem.windows) {
+            getCompileTask().get().compilerArgs.addAll("-I${jvmHome}/include")
+            getCompileTask().get().compilerArgs.addAll("-I${jvmHome}/include/win32")
+        } else if (getCompileTask().get().targetPlatform.get().operatingSystem.freeBSD) {
+            getCompileTask().get().compilerArgs.addAll('-I', "${jvmHome}/include")
+            getCompileTask().get().compilerArgs.addAll('-I', "${jvmHome}/include/freebsd")
+        }
+    }
+
+    source.from file('src')
+}
+
+
+
