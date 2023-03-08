@@ -28,7 +28,7 @@ jobs:
         run: mkdir windows & mkdir output_natives
 
       - name: Compile
-        run: cl.exe -LD -I$JAVA_HOME/include -I$JAVA_HOME/include/win32 src/main/cpp/zone_rong_imaginebreaker_NativeImagineBreaker.cpp -link -out:output_natives/imaginebreaker.dll
+        run: cl.exe -O2 -LD -I$JAVA_HOME/include -I$JAVA_HOME/include/win32 src/main/cpp/zone_rong_imaginebreaker_NativeImagineBreaker.cpp -link -out:output_natives/imaginebreaker.dll
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
@@ -54,7 +54,7 @@ jobs:
         run: mkdir linux && mkdir output_natives
 
       - name: Compile
-        run: g++ -c -fPIC -I$JAVA_HOME/include -I$JAVA_HOME/include/linux src/main/cpp/zone_rong_imaginebreaker_NativeImagineBreaker.cpp -o linux/zone_rong_imaginebreaker_NativeImagineBreaker.o
+        run: g++ -c  -O2 -fPIC -I$JAVA_HOME/include -I$JAVA_HOME/include/linux src/main/cpp/zone_rong_imaginebreaker_NativeImagineBreaker.cpp -o linux/zone_rong_imaginebreaker_NativeImagineBreaker.o
 
       - name: Linking
         run: g++ -shared -fPIC -o output_natives/libimaginebreaker.so linux/zone_rong_imaginebreaker_NativeImagineBreaker.o -lc
@@ -84,7 +84,7 @@ jobs:
         run: mkdir macos && mkdir output_natives
 
       - name: Compile
-        run: g++ -c -fPIC -I$JAVA_HOME/include -I$JAVA_HOME/include/darwin src/main/cpp/zone_rong_imaginebreaker_NativeImagineBreaker.cpp -o macos/zone_rong_imaginebreaker_NativeImagineBreaker.o
+        run: g++ -c  -O2 -fPIC -I$JAVA_HOME/include -I$JAVA_HOME/include/darwin src/main/cpp/zone_rong_imaginebreaker_NativeImagineBreaker.cpp -o macos/zone_rong_imaginebreaker_NativeImagineBreaker.o
 
       - name: Linking
         run: g++ -dynamiclib -o output_natives/libimaginebreaker.dylib macos/zone_rong_imaginebreaker_NativeImagineBreaker.o -lc
